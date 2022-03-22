@@ -207,6 +207,7 @@ sui <- filter(aae, NOC %in% c("SUI"))
 cze <- filter(aae, NOC %in% c("CZE"))
 
 # For each country, group by year and summarize medal counts to prepare for over time trend visualizations
+#how many medals of each type the country won
 rus_trend <- rus %>%
   group_by(Year) %>%
   summarise(Medals=sum(as.numeric(Medal)),
