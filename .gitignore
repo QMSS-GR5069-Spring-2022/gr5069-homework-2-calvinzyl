@@ -1,6 +1,9 @@
 # OS files
 *.DS_Store
 
+# R Project
+*.Rproj
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
