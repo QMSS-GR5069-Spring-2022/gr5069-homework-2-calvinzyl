@@ -60,6 +60,8 @@ library(ggplot2)
 library(dplyr)
 library(tidyverse)
 
+:::::::::::::::: Load Data :::::::::::::::::::::::::
+
 ath_event <- read.csv("/Users/yanlinzhang/Desktop/Data Visualization/assignment-1---winter-olympics-calvinzyl/data/athletes_and_events.csv")
 gdp <- read.csv("/Users/yanlinzhang/Desktop/Data Visualization/assignment-1---winter-olympics-calvinzyl/data/gdp_pop.csv")
 noc <- read.csv("/Users/yanlinzhang/Desktop/Data Visualization/assignment-1---winter-olympics-calvinzyl/data/noc_regions.csv")
