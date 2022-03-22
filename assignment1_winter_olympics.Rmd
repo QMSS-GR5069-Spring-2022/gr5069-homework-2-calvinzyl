@@ -517,7 +517,7 @@ aae3 <- aae3 %>%
 speed_skating <- aae3 %>%
   filter(Sport == "Speed Skating")
 
-ih <- aae3 %>%
+ice_hocky <- aae3 %>%
   filter(Sport == "Ice Hockey")
 
 # Visualize the relationship between weight and height in speed skating as well as ice hockey
