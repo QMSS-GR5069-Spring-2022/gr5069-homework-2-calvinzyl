@@ -514,7 +514,7 @@ aae3 <- aae3 %>%
   filter(Weight != "0")
 
 # Filter out speed skating and ice hockey athlete dimensions for later comparison
-sk <- aae3 %>%
+speed_skating <- aae3 %>%
   filter(Sport == "Speed Skating")
 
 ih <- aae3 %>%
