@@ -210,70 +210,70 @@ cze <- filter(aae, NOC %in% c("CZE"))
 #how many medals of each type the country won
 rus_trend <- rus %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
+  summarise(Medals = sum(as.numeric(Medal)),
             .groups='drop') %>%
   mutate(NOC="RUS",
          .after="Medals")
 
 usa_trend <- usa %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
+  summarise(Medals = sum(as.numeric(Medal)),
             .groups='drop') %>%
   mutate(NOC="USA",
          .after="Medals")
 
 ger_trend <- ger %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
+  summarise(Medals = sum(as.numeric(Medal)),
             .groups='drop') %>%
   mutate(NOC="GER",
          .after="Medals")
 
 can_trend <- can %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
+  summarise(Medals = sum(as.numeric(Medal)),
             .groups='drop') %>%
   mutate(NOC="CAN",
          .after="Medals")
 
 nor_trend <- nor %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
+  summarise(Medals = sum(as.numeric(Medal)),
             .groups='drop') %>%
   mutate(NOC="NOR",
          .after="Medals")
 
 swe_trend <- swe %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
+  summarise(Medals = sum(as.numeric(Medal)),
             .groups='drop') %>%
   mutate(NOC="SWE",
          .after="Medals")
 
 fin_trend <- fin %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
+  summarise(Medals = sum(as.numeric(Medal)),
             .groups='drop') %>%
   mutate(NOC="FIN",
          .after="Medals")
 
 aut_trend <- aut %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
+  summarise(Medals = sum(as.numeric(Medal)),
             .groups='drop') %>%
   mutate(NOC="AUT",
          .after="Medals")
 
 sui_trend <- sui %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
+  summarise(Medals = sum(as.numeric(Medal)),
             .groups='drop') %>%
   mutate(NOC="SUI",
              .after="Medals")
 
 cze_trend <- cze %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
+  summarise(Medals = sum(as.numeric(Medal)),
             .groups='drop') %>%
   mutate(NOC="CZE",
           .after="Medals")
