@@ -276,7 +276,7 @@ cze_trend <- cze %>%
   summarise(Medals = sum(as.numeric(Medal)),
             .groups='drop') %>%
   mutate(NOC="CZE",
-          .after="Medals")
+          .after = "Medals")
 
 plot <- rbind(rus_trend, usa_trend, ger_trend, can_trend, nor_trend,
               swe_trend, fin_trend, aut_trend, sui_trend, cze_trend)
