@@ -19,9 +19,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Imagine you are the data scientist at a respected media outlet -- say the "New York Times". For the Winter Olympics coverage, your editor-in-chief asks you to analyze some data on the history of `Winter Olympics Medals by Year, Country, Event and Gender` and prepare some data visualizations in which you outline the main patterns around which to base the story.
 
-Since there is **no way that all features of the data can be represented** in such a memo, feel free to pick and choose some patterns that would make for a good story -- outlining important patterns and presenting them in a visually pleasing way. 
+Since there is **no way that all features of the data can be represented** in such a memo, feel free to pick and choose some patterns that would make for a good story -- outlining important patterns and presenting them in a visually pleasing way.
 
-The full background and text of the story will be researched by a writer of the magazine -- your input should be based on the data and some common sense (i.e. no need to read up on this). 
+The full background and text of the story will be researched by a writer of the magazine -- your input should be based on the data and some common sense (i.e. no need to read up on this).
 
 Provide **polished plots** that are refined enough to include in the magazine with very little further manipulation (already include variable descriptions [if necessary for understanding], titles, source [e.g. "International Olympic Committee"], right color etc.) and are understandable to the average reader of the "New York Times". The design does not need to be NYTimes-like. Just be consistent.
 
@@ -60,7 +60,9 @@ library(ggplot2)
 library(dplyr)
 library(tidyverse)
 
-aaee <- read.csv("/Users/yanlinzhang/Desktop/Data Visualization/assignment-1---winter-olympics-calvinzyl/data/athletes_and_events.csv")
+:::::::::::::::: Load Data :::::::::::::::::::::::::
+
+ath_event <- read.csv("/Users/yanlinzhang/Desktop/Data Visualization/assignment-1---winter-olympics-calvinzyl/data/athletes_and_events.csv")
 gdp <- read.csv("/Users/yanlinzhang/Desktop/Data Visualization/assignment-1---winter-olympics-calvinzyl/data/gdp_pop.csv")
 noc <- read.csv("/Users/yanlinzhang/Desktop/Data Visualization/assignment-1---winter-olympics-calvinzyl/data/noc_regions.csv")
 ```
@@ -68,8 +70,8 @@ noc <- read.csv("/Users/yanlinzhang/Desktop/Data Visualization/assignment-1---wi
 ```{r}
 library(caret)
 
-# One-hot encode gold, silver, and bronze 
-dum <- aaee[ , c("ID", "Medal")]
+# One-hot encode gold, silver, and bronze
+dum <- ath_event[ , c("ID", "Medal")]
 dummy <- dummyVars(" ~ .", data=dum)
 dummy <- data.frame(predict(dummy, newdata=dum))
 dummy[is.na(dummy)] <- 0
@@ -84,13 +86,13 @@ aae2[is.na(aae2)] <- 0
 ouch <- data.frame(dummy, aae2)
 
 # Drop all rows from Summer Olympics
-aae3 <- ouch[!(ouch$Season=="Summer"),] 
+aae3 <- ouch[!(ouch$Season=="Summer"),]
 
 # Ensure team events are counted as a single medal
 aae <- distinct(aae3, NOC, Event, Year, Medal, MedalGold, MedalBronze, MedalSilver)
 
 # Compute total winter games each country competed in
-games <- aae3 %>% group_by(NOC) %>% 
+games <- aae3 %>% group_by(NOC) %>%
   summarise(Winter_Games=n_distinct(Games))
 
 # Compute total medals each country won
@@ -123,20 +125,20 @@ small_merge2$NOC[small_merge2$NOC == "SCG"] <- "SRB"
 small_merge2$NOC[small_merge2$NOC == "YUG"] <- "SRB"
 
 # Sum up total games and medals for countries with multiple designations
-small_merge3 <- small_merge2 %>% 
-  group_by(NOC) %>% 
+small_merge3 <- small_merge2 %>%
+  group_by(NOC) %>%
   summarize(Winter_Games=sum(Winter_Games), Medals=sum(Medals), Golds=sum(Golds), Silver=sum(Silvers), Bronze=sum(Bronzes))
 
-gdp <- gdp %>% 
+gdp <- gdp %>%
   rename(NOC = Code)
 
-Combined <- dplyr::inner_join(small_merge3, gdp, by="NOC") 
+Combined <- dplyr::inner_join(small_merge3, gdp, by="NOC")
 print(Combined)
 ```
 
   _For countries with different designations in the past, I added up all the games and medals from those designations since I want align the NOCs with current set of countries but also take into account their past achievements under other designations. For example, I added medals and games from United Team and Soviet Union to those from Russia. Same rule applies to United Team of Germany and East Germany. Those governments of the same country are not strictly administratively identical, but I append their medal and game counts for the purpose of an up-to-date summary._
-  
-b) Calculate a summary of how many winter games each country competed in, and how many medals of each type the country won. Use that summary to provide a **visual comparison of medal count by country**. 
+
+b) Calculate a summary of how many winter games each country competed in, and how many medals of each type the country won. Use that summary to provide a **visual comparison of medal count by country**.
 
 ```{r}
 # Data frame summary of how many winter games each country competed in and how many medals of total medal and each type the country won
@@ -144,11 +146,11 @@ summary_games_by_country <- Combined[,c("NOC","Winter_Games", "Medals","Golds", 
 print(summary_games_by_country)
 ```
 
-Feel free to focus on smaller set of countries (say the top 10), highlight the United States or another country of your choice, consider gender of the medal winners etc. to make the visualization interesting. 
+Feel free to focus on smaller set of countries (say the top 10), highlight the United States or another country of your choice, consider gender of the medal winners etc. to make the visualization interesting.
 
 Please provide (i) one visualization showing an over time comparison and (ii) one visualization in which a total medal count (across all Winter Olympics) is used. Briefly discuss which visualization you recommend to your editor and why.
 
-**Note:** Currently, the medal data contains information on _each athlete_ competing, including for team events. For example, in 2014 Russia received _4 gold medals for their men's win in Bobsleigh Men's Four_ alone. Since this is usually not how it is done in official medal statistics, try to wrangle the data so that _team events are counted as a single medal_. 
+**Note:** Currently, the medal data contains information on _each athlete_ competing, including for team events. For example, in 2014 Russia received _4 gold medals for their men's win in Bobsleigh Men's Four_ alone. Since this is usually not how it is done in official medal statistics, try to wrangle the data so that _team events are counted as a single medal_.
 
 ```{r}
 # Sort the combined data frame in an decreasing order based on medal counts
@@ -158,30 +160,30 @@ sorted_medal_graph <- head(sorted_medal, 10)
 sorted_medal_graph <- sorted_medal_graph[order(sorted_medal_graph$Medals, decreasing=TRUE),]
 
 # Create bar chart to show top 10 countries with most medals
-medal_count_winter <- ggplot(sorted_medal_graph, aes(x=reorder(NOC, -Medals), y=Medals)) + 
-  geom_bar(stat="identity",width=0.7) + 
-  labs(y="Total Number of Medals", x="National Olympic Committee") + 
+medal_count_winter <- ggplot(sorted_medal_graph, aes(x=reorder(NOC, -Medals), y=Medals)) +
+  geom_bar(stat="identity",width=0.7) +
+  labs(y="Total Number of Medals", x="National Olympic Committee") +
   ggtitle("Top 10 Countries with Most Winter Olympic Medals of All Time")
 
 # Create bar chart to show top 10 countries with most golds
-gold_count_winter <- ggplot(sorted_medal_graph, aes(x=reorder(NOC, -Golds), y=Golds)) + 
-  geom_bar(stat="identity",width=0.7) + 
+gold_count_winter <- ggplot(sorted_medal_graph, aes(x=reorder(NOC, -Golds), y=Golds)) +
+  geom_bar(stat="identity",width=0.7) +
   labs(y="Total Number of Golds") +
   theme(axis.text.x = element_text(size=5),
         axis.title.x = element_blank()) +
   coord_cartesian(ylim = c(0, 140))
 
 # Create bar chart to show top 10 countries with most silvers
-silver_count_winter <- ggplot(sorted_medal_graph, aes(x=reorder(NOC, -Silver), y=Silver)) + 
-  geom_bar(stat="identity",width=0.7) + 
+silver_count_winter <- ggplot(sorted_medal_graph, aes(x=reorder(NOC, -Silver), y=Silver)) +
+  geom_bar(stat="identity",width=0.7) +
   labs(y="Total Number of Silvers") +
   theme(axis.text.x = element_text(size=5),
         axis.title.x = element_blank()) +
   coord_cartesian(ylim = c(0, 140))
 
 # Create bar chart to show top 10 countries with most bronzes
-bronze_count_winter <- ggplot(sorted_medal_graph, aes(x=reorder(NOC, -Bronze), y=Bronze)) + 
-  geom_bar(stat="identity",width=0.7) + 
+bronze_count_winter <- ggplot(sorted_medal_graph, aes(x=reorder(NOC, -Bronze), y=Bronze)) +
+  geom_bar(stat="identity",width=0.7) +
   labs(y="Total Number of Bronzes") +
   theme(axis.text.x = element_text(size=5),
         axis.title.x = element_blank()) +
@@ -207,75 +209,76 @@ sui <- filter(aae, NOC %in% c("SUI"))
 cze <- filter(aae, NOC %in% c("CZE"))
 
 # For each country, group by year and summarize medal counts to prepare for over time trend visualizations
+#how many medals of each type the country won
 rus_trend <- rus %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
-            .groups='drop') %>% 
+  summarise(Medals = sum(as.numeric(Medal)),
+            .groups='drop') %>%
   mutate(NOC="RUS",
          .after="Medals")
 
 usa_trend <- usa %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
-            .groups='drop') %>% 
+  summarise(Medals = sum(as.numeric(Medal)),
+            .groups='drop') %>%
   mutate(NOC="USA",
          .after="Medals")
 
 ger_trend <- ger %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
-            .groups='drop') %>% 
+  summarise(Medals = sum(as.numeric(Medal)),
+            .groups='drop') %>%
   mutate(NOC="GER",
          .after="Medals")
 
 can_trend <- can %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
-            .groups='drop') %>% 
+  summarise(Medals = sum(as.numeric(Medal)),
+            .groups='drop') %>%
   mutate(NOC="CAN",
          .after="Medals")
 
 nor_trend <- nor %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
-            .groups='drop') %>% 
+  summarise(Medals = sum(as.numeric(Medal)),
+            .groups='drop') %>%
   mutate(NOC="NOR",
          .after="Medals")
 
 swe_trend <- swe %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
-            .groups='drop') %>% 
+  summarise(Medals = sum(as.numeric(Medal)),
+            .groups='drop') %>%
   mutate(NOC="SWE",
          .after="Medals")
 
 fin_trend <- fin %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
-            .groups='drop') %>% 
+  summarise(Medals = sum(as.numeric(Medal)),
+            .groups='drop') %>%
   mutate(NOC="FIN",
          .after="Medals")
 
 aut_trend <- aut %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
-            .groups='drop') %>% 
+  summarise(Medals = sum(as.numeric(Medal)),
+            .groups='drop') %>%
   mutate(NOC="AUT",
          .after="Medals")
 
 sui_trend <- sui %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
-            .groups='drop') %>% 
+  summarise(Medals = sum(as.numeric(Medal)),
+            .groups='drop') %>%
   mutate(NOC="SUI",
              .after="Medals")
 
 cze_trend <- cze %>%
   group_by(Year) %>%
-  summarise(Medals=sum(as.numeric(Medal)),
-            .groups='drop') %>% 
+  summarise(Medals = sum(as.numeric(Medal)),
+            .groups='drop') %>%
   mutate(NOC="CZE",
-          .after="Medals")
+          .after = "Medals")
 
 plot <- rbind(rus_trend, usa_trend, ger_trend, can_trend, nor_trend,
               swe_trend, fin_trend, aut_trend, sui_trend, cze_trend)
@@ -286,12 +289,12 @@ library("ggthemes")
 medal_trend <- ggplot(data = plot, aes(x=Year, y=Medals, group=NOC)) +
   theme_clean() +
   geom_line(aes(color=NOC)) +
-  labs(x="National Olympic Committee") + 
+  labs(x="National Olympic Committee") +
   ggtitle("Top 10 Countries with Most Winter Olympic Medals over time")
 
 print(medal_trend)
 ```
-  
+
   _Between the over time medal comparison and medal count by countries, I prefer the latter (bar chart combination). This is because a basic bar chart is in my opinion the most suitable graphical representation of comparison. With comparisons of each type of medals in addition, viewers are able to see the medal breakdown of each country as well, although a stacked bar chart in this case would be a more concise choice. On the contrary, in terms of static graphics, the time-series plot above looks messy, making viewers hard to distinguish between different countries. Moreover, almost all countries were absent in some of the Winter Olympics, which makes the over time trends less accurate._
 
 #### 2. Medal Counts adjusted by Population, GDP
@@ -301,16 +304,16 @@ There are different ways to calculate "success". Consider the following variants
   - Simply add up the number of medals of different types.    
   - Create an index in which medals are valued differently. (gold=3, silver=2, bronze=1).   
   - A reasonable other way that you prefer.
-  
+
 Now, adjust the ranking of medal success by (a) GDP per capita and (b) population. You have now three rankings: unadjusted ranking, adjusted by GDP per capita, and adjusted by population.
 
 Visualize how these rankings differ. Try to highlight a specific pattern (e.g. "South Korea -- specialization reaps benefits" or "The superpowers losing their grip").
 
 ```{r}
-unadjusted_ranking <- ggplot(sorted_medal_graph, aes(x=reorder(NOC, -Medals), y=Medals)) + 
-  geom_bar(stat="identity",width=0.7) + 
+unadjusted_ranking <- ggplot(sorted_medal_graph, aes(x=reorder(NOC, -Medals), y=Medals)) +
+  geom_bar(stat="identity",width=0.7) +
   theme(axis.title.y = element_text(size = 8)) +
-  labs(y="Total Number of Medals", x="National Olympic Committee") + 
+  labs(y="Total Number of Medals", x="National Olympic Committee") +
   ggtitle("Unadjusted Ranking")
 
 # Compute adjusted rankings
@@ -323,16 +326,16 @@ sorted_pop_graph <- head(sorted_pop, 10)
 sorted_gdp<- Combined[order(Combined$MedalsbyGDP, decreasing=TRUE),]
 sorted_gdp_graph <- head(sorted_gdp, 10)
 
-adjusted_ranking1 <- ggplot(sorted_pop_graph, aes(x=reorder(NOC, -MedalsbyPop), y=MedalsbyPop)) + 
-  geom_bar(stat="identity",width=0.7) + 
-  theme(axis.title.y = element_text(size = 8)) +
-  labs(y="Medal Counts adjusted by Population", x="National Olympic Committee") + 
-  ggtitle("Population-Adjusted Ranking")
-
-adjusted_ranking2 <- ggplot(sorted_gdp_graph, aes(x=reorder(NOC, -MedalsbyGDP), y=MedalsbyGDP)) + 
+adjusted_ranking1 <- ggplot(sorted_pop_graph, aes(x=reorder(NOC, -MedalsbyPop), y=MedalsbyPop)) +
   geom_bar(stat="identity",width=0.7) +
   theme(axis.title.y = element_text(size = 8)) +
-  labs(y="Medal Counts adjusted by GDP", x="National Olympic Committee") + 
+  labs(y="Medal Counts adjusted by Population", x="National Olympic Committee") +
+  ggtitle("Population-Adjusted Ranking")
+
+adjusted_ranking2 <- ggplot(sorted_gdp_graph, aes(x=reorder(NOC, -MedalsbyGDP), y=MedalsbyGDP)) +
+  geom_bar(stat="identity",width=0.7) +
+  theme(axis.title.y = element_text(size = 8)) +
+  labs(y="Medal Counts adjusted by GDP", x="National Olympic Committee") +
   ggtitle("GDP-Adjusted Ranking")
 
 library("cowplot")
@@ -343,7 +346,7 @@ cowplot::plot_grid(unadjusted_ranking, adjusted_ranking1, adjusted_ranking2)
 
 #### 3. Host Country Advantage
 
-Until the 2014 Sochi Winter Olympics (our data for Winter Olympics end here), there were 19 host cities. Calculate whether the host nation had an advantage. That is calculate whether the host country did win more medals when the Winter Olympics was in their country compared to other times. 
+Until the 2014 Sochi Winter Olympics (our data for Winter Olympics end here), there were 19 host cities. Calculate whether the host nation had an advantage. That is calculate whether the host country did win more medals when the Winter Olympics was in their country compared to other times.
 
 Note, that the 19 host cities are noted in the data but not the countries they are located in. This happens commonly and often Wikipedia has the [kind of additional data you want for the task](https://en.wikipedia.org/wiki/Winter_Olympic_Games). To save you some time, here is a quick way to get this kind of table from Wikipedia into R:
 
@@ -362,7 +365,7 @@ Provide a visualization of the host country advantage (or absence thereof).
 ```{r}
 # For each country, annotate specific years with host cities
 usa_host <- usa_trend %>%
-  mutate(Host="None") %>% 
+  mutate(Host="None") %>%
   mutate(City="")
 usa_host$Host[usa_host$Year == 1960 | usa_host$Year == 1932 | usa_host$Year == 1980 | usa_host$Year == 2002] <- "Host"
 usa_host$City[usa_host$Year == 1932] <- "1932\nLake Placid"
@@ -371,26 +374,26 @@ usa_host$City[usa_host$Year == 1980] <- "1980\nLake Placid"
 usa_host$City[usa_host$Year == 2002] <- "2002\nSalt Lake City"
 
 aut_host <- aut_trend %>%
-  mutate(Host="None") %>% 
+  mutate(Host="None") %>%
   mutate(City="")
 aut_host$Host[aut_host$Year == 1964 | aut_host$Year == 1976 ] <- "Host"
 aut_host$City[aut_host$Year == 1964] <- "1964\nInnsbruck"
 aut_host$City[aut_host$Year == 1976] <- "1976\nInnsbruck"
 
 sui_host <- sui_trend %>%
-  mutate(Host="None") %>% 
+  mutate(Host="None") %>%
   mutate(City="")
 sui_host$Host[sui_host$Year == 1928 | sui_host$Year == 1948 ] <- "Host"
 sui_host$City[sui_host$Year == 1928] <- "1928\nSt. Moritz"
 sui_host$City[sui_host$Year == 1948] <- "1948\nSt. Moritz"
 
 can_host <- can_trend %>%
-  mutate(Host="None") %>% 
+  mutate(Host="None") %>%
   mutate(City="")
 can_host$Host[can_host$Year == 1988 | can_host$Year == 2010 ] <- "Host"
 can_host$City[can_host$Year == 1988] <- "1988\nCalgary"
 can_host$City[can_host$Year == 2010] <- "2010\nVancouver"
-``` 
+```
 
 ```{r}
 # Use minimal bar plots to show four countries' over time medal counts and highlight the years of hosts
@@ -453,7 +456,7 @@ can_host_graph <- ggplot(data=can_host, aes(x=Year, y=Medals, color=Host)) +
 library("patchwork")
 (usa_host_graph + can_host_graph) / (sui_host_graph + aut_host_graph)
 ```
-  
+
   _I randomly picked four countries to explore the host country advantage. One certainly include a lot more to show more convincing patterns, but due to time limit I only did four. It seems like the host advantange is generally true, where I define as the host country obtaining conspicuously more medals than it did in adjacent Olympic games. There is apparently one exception which is Switzerland's 1928 St. Moritz Olympics, and I would say it's reasonable especially in the very early stage of Winter Olympics where everything was not well developed yet._
 
 #### 4. Most successful athletes
@@ -466,18 +469,18 @@ aae3$Sex[aae3$Sex == "F"] <- 0
 
 # Group total medals, events, and gender by athlete names
 athlete <- aae3 %>%
-  mutate(Event_ct=1) %>% 
+  mutate(Event_ct=1) %>%
   group_by(Name) %>%
   summarise(Medals=sum(as.numeric(Medal)),
             Events=sum(Event_ct),
             Gender=mean(as.numeric(Sex)),
-            .groups='drop') %>% 
+            .groups='drop') %>%
   arrange(desc(Medals))
 
 athlete$Gender[athlete$Gender == 1] <- "Male"
 athlete$Gender[athlete$Gender == 0] <- "Female"
 
-sorted_athlete <- head(athlete, 300) 
+sorted_athlete <- head(athlete, 300)
 
 pointsToLabel <- c("Ole Einar Bjrndalen", "Raisa Petrovna Smetanina",
                    "Stefania Belmondo", "Yang Yang","Lyubov Ivanovna Yegorova",
@@ -489,7 +492,7 @@ suc_ath <- ggplot(data=sorted_athlete,
   scale_color_grey() +
   theme_gdocs() +
   geom_point(alpha=0.8, size = 3) +
-  labs(y="Events", x="Medals") + 
+  labs(y="Events", x="Medals") +
   ggtitle("Most Successful Athletes of All Time") +
   geom_text(aes(label=Name, hjust=0.9, vjust=1.5),
             color = "gray20",
@@ -500,7 +503,7 @@ suc_ath <- ggplot(data=sorted_athlete,
 
 print(suc_ath)
 ```
-  
+
   _This scatter plot is trying to show a few athletes with most number of medals obtained and events attended. There are, not surprisingly, some big names appearing in the graph such as Ole Bjrndalen, Yang Yang, Raisa Semtanina, and so on. I also grouped the points by gender, which does not show anything outstanding. Note that the plot is static, so there isn't much room to illustrate whom each point corresponds to, and that's the reason why I used ggplotly in Part 5 to add interactive labels of a similar plot, which is way better than this one._
 
 b) Chose of of the athlete specific dimensions (e.g. gender, height, weight) and visualize an interesting pattern in the data.
@@ -509,15 +512,15 @@ b) Chose of of the athlete specific dimensions (e.g. gender, height, weight) and
 library(gridExtra)
 library(ggpubr)
 
-aae3 <- aae3 %>% 
-  filter(Height != "0") %>% 
+aae3 <- aae3 %>%
+  filter(Height != "0") %>%
   filter(Weight != "0")
 
 # Filter out speed skating and ice hockey athlete dimensions for later comparison
-sk <- aae3 %>% 
-  filter(Sport == "Speed Skating") 
+speed_skating <- aae3 %>%
+  filter(Sport == "Speed Skating")
 
-ih <- aae3 %>% 
+ice_hocky <- aae3 %>%
   filter(Sport == "Ice Hockey")
 
 # Visualize the relationship between weight and height in speed skating as well as ice hockey
@@ -545,8 +548,8 @@ ih_graph <- ggplot(data=ih,
 
 grid.arrange(sk_graph, ih_graph, ncol=2)
 ```
-  
-  
+
+
   _In here I did a simple camparison of athlete dimensions between speed skating and ice hockey. The visualization shows that the range of height does not really differ, but athletes in Ice Hockey have generally higher weights, which is fairly intuitive._
 
 ### Interactivity
@@ -562,16 +565,16 @@ library(plotly)
 plot_ly(plot, x=~Year, y=~Medals, color=~NOC,
         type="scatter",
         mode="lines+markers",
-        line =list(width=3, dash="dot")) %>% 
+        line =list(width=3, dash="dot")) %>%
   layout(title="Top 10 Countries with Most Winter Olympic Medals over time",
          hovermode = "x unified")
 ```
 
-  
+
   _The first interactive plot is built upon the time-series plot of over time medal comparison between countries in Part 1. I used the line-marker combo to make the curves more eye-catching, if not more aesthetically appealing, and added the x-unified hover mode to enable comparisons in specific cross-sections of time. The idea of interactivity fits this plot well because it's hard to eyeball any detailed patterns in the static version but not in the dynamic one._
 
 ```{r}
-sorted_athlete2 <- head(athlete, 500) 
+sorted_athlete2 <- head(athlete, 500)
 
 # Use ggplotly to automate the successful athlete static scatter plot
 suc_ath_inter <- ggplot(data=sorted_athlete2,
@@ -579,7 +582,7 @@ suc_ath_inter <- ggplot(data=sorted_athlete2,
   scale_color_grey() +
   theme_gdocs() +
   geom_point(size = 2) +
-  labs(y="Events", x="Medals") + 
+  labs(y="Events", x="Medals") +
   ggtitle("Most Successful Athletes of All Time") +
   theme(plot.title = element_text(size = 18, hjust = 0.5),
         axis.title.x=element_text(size = 13),
@@ -587,8 +590,8 @@ suc_ath_inter <- ggplot(data=sorted_athlete2,
 
 ggplotly(suc_ath_inter)
 ```
-  
-  
+
+
   _Note that in this ggplotly "upgrade" I incorporated more athletes (500 over 300) because the specific information like athlete names won't show up until someone selects a specific point. Therefore, the general view is a lot more clear than the static version when I don't have to manually label those points._
 
 #### 6. Data Table
@@ -598,50 +601,50 @@ Prepare a selected data set and add a `datatable` to the output. Make sure the c
 ```{r}
 library(DT)
 
-ath_counts <- aae3 %>% 
-  count(Games, Name) %>% 
-  mutate("n"=1) %>% 
-  count(Games) %>% 
+ath_counts <- aae3 %>%
+  count(Games, Name) %>%
+  mutate("n"=1) %>%
+  count(Games) %>%
   rename(ath_counts = n)
 
 avg_height <- aae3 %>%
-  filter(Height != '0') %>% 
-  group_by(Games) %>% 
+  filter(Height != '0') %>%
+  group_by(Games) %>%
   summarise(Avg_Height=mean(Height),
             .groups='drop')
 
 avg_weight <- aae3 %>%
-  filter(Weight != '0') %>% 
-  group_by(Games) %>% 
+  filter(Weight != '0') %>%
+  group_by(Games) %>%
   summarise(Avg_Weight=mean(Weight),
             .groups='drop')
 
-medal_counts <- aae3 %>% 
-  group_by(Games) %>% 
+medal_counts <- aae3 %>%
+  group_by(Games) %>%
   summarise(Medals=sum(as.numeric(Medal)),
             .groups='drop')
 
-gold_counts <- aae3 %>% 
-  group_by(Games) %>% 
+gold_counts <- aae3 %>%
+  group_by(Games) %>%
   summarise(Medals=sum(MedalGold),
-            .groups='drop') %>% 
+            .groups='drop') %>%
   rename(Gold=Medals)
 
-silver_counts <- aae3 %>% 
-  group_by(Games) %>% 
+silver_counts <- aae3 %>%
+  group_by(Games) %>%
   summarise(Medals=sum(MedalSilver),
-            .groups='drop') %>% 
+            .groups='drop') %>%
   rename(Silver=Medals)
 
-bronze_counts <- aae3 %>% 
-  group_by(Games) %>% 
+bronze_counts <- aae3 %>%
+  group_by(Games) %>%
   summarise(Medals=sum(MedalBronze),
-            .groups='drop') %>% 
+            .groups='drop') %>%
   rename(Bronze=Medals)
 
-noc_counts <- aae3 %>% 
-  count(Games, NOC) %>% 
-  count(Games) %>% 
+noc_counts <- aae3 %>%
+  count(Games, NOC) %>%
+  count(Games) %>%
   rename(noc_counts = n)
 
 avg_weight <- avg_weight$Avg_Weight
@@ -656,9 +659,9 @@ good_data <- data.frame(noc_counts,medal_counts, gold_counts, silver_counts, bro
 
 fancy_table <- datatable(good_data,
           rownames = TRUE,
-          colnames=c("Games", "Countries","Medals","Gold", "Silver", "Bronze", "Athletes", "Average Height", "Average Weight")) %>% 
-  formatStyle('Games',  color = 'white', 
-              backgroundColor = 'blue', fontWeight = 'bold') %>% 
+          colnames=c("Games", "Countries","Medals","Gold", "Silver", "Bronze", "Athletes", "Average Height", "Average Weight")) %>%
+  formatStyle('Games',  color = 'white',
+              backgroundColor = 'blue', fontWeight = 'bold') %>%
   formatStyle('medal_counts',
               background = styleColorBar(good_data$medal_counts, 'lightblue'),
               backgroundSize = '98% 88%',
@@ -668,12 +671,12 @@ fancy_table <- datatable(good_data,
               background = styleColorBar(good_data$bronze_counts, 'brown'),
               backgroundSize = '98% 88%',
               backgroudRepeat = 'no-repeat',
-              backgroundPosition = 'center') %>% 
+              backgroundPosition = 'center') %>%
   formatStyle('gold_counts',
               background = styleColorBar(good_data$gold_counts, 'gold'),
               backgroundSize = '98% 88%',
               backgroudRepeat = 'no-repeat',
-              backgroundPosition = 'center') %>% 
+              backgroundPosition = 'center') %>%
   formatStyle('silver_counts',
               background = styleColorBar(good_data$silver_counts, 'grey'),
               backgroundSize = '98% 88%',
@@ -682,15 +685,15 @@ fancy_table <- datatable(good_data,
 
 fancy_table
 ```
-  
-  
+
+
   _This data table is a snapshot of some descriptive information of each Winter Olympics, including countries, medals, athletes, average height and weight. Those fundamental statistics would give any reader a clear sense of how each Winter Olympics differ. For example, there is a general increasing trend of everything, but 1980 Winter Olympics shows an oddly decrease in lots of indices in the table, so one might wonder if anything like boycotting happened. To make the data table more informative, one can also include host cities, number of sport events, gender ratio, etc._
 
 ## Technical Details
 
-The data comes in a reasonably clean Excel data set. If needed for your visualization, you can add visual drapery like flag icons, icons for sports, icons for medals etc. but your are certainly not obligated to do that. 
+The data comes in a reasonably clean Excel data set. If needed for your visualization, you can add visual drapery like flag icons, icons for sports, icons for medals etc. but your are certainly not obligated to do that.
 
-Part of the your task will be transforming the dataset into a shape that allows you to plot what you want in `ggplot2`. For some plots, you will necessarily need to be selective in what to include and what to leave out. 
+Part of the your task will be transforming the dataset into a shape that allows you to plot what you want in `ggplot2`. For some plots, you will necessarily need to be selective in what to include and what to leave out.
 
 Make sure to use at least three different types of graphs, e.g. line graphs, scatter, histograms, bar chats, dot plots, heat maps etc.
 

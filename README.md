@@ -1,33 +1,33 @@
-# HOMEWORK # 2
+Assignment 1: Using ggplot2 for visualization
+Thomas Brambor
+Winter Olympics Medals over Time
+Scenario
+Imagine you are the data scientist at a respected media outlet – say the “New York Times”. For the Winter Olympics coverage, your editor-in-chief asks you to analyze some data on the history of Winter Olympics Medals by Year, Country, Event and Gender and prepare some data visualizations in which you outline the main patterns around which to base the story.
 
-**Objective:** This homework exercise is intended to give you first-hand experience in building a repo for a DS project aligned with current best practices and to help you understand the logic behind best practices. If you need a refresher, check the slides for [week 3](https://github.com/marco-morales/QMSS-GR5069_Spring2022/tree/main/week_03) and [week 4](https://github.com/marco-morales/QMSS-GR5069_Spring2022/tree/main/week_04).
+Since there is no way that all features of the data can be represented in such a memo, feel free to pick and choose some patterns that would make for a good story – outlining important patterns and presenting them in a visually pleasing way.
 
-### Instructions:
+The full background and text of the story will be researched by a writer of the magazine – your input should be based on the data and some common sense (i.e. no need to read up on this).
 
-#### (a) select a project and push it to this repo
+Provide polished plots that are refined enough to include in the magazine with very little further manipulation (already include variable descriptions [if necessary for understanding], titles, source [e.g. “International Olympic Committee”], right color etc.) and are understandable to the average reader of the “New York Times”. The design does not need to be NYTimes-like. Just be consistent.
 
-* choose a project of your own that you have produced in the past: *e.g*  a homework or a final project for another class
-* `push` all files from that project to this repo without changing it. (Note that GitHub is not designed to store data and thus cannot store large files.)
+Data
+The main data is provided as an excel sheet, containing the following variables on all participating athletes in all olympics from 1896 to 2016 (sadly, the original source of the data no longer updates beyond that year):
 
-#### (b) add a collaborator
+ID: a unique indentifier of the entry
+Name: name of the athlete
+Sex: sex of the athlete
+Age: age of the athlete
+Height: height of the athlete
+Weight: weight of the athlete
+Team: usually the country team of the athlete, with the exception of political accomodations, e.g. the “Refugee Olympic Athletes” team.
+NOC: national olympic comittee abbreviation.
+Games: year and season of games.
+Year: year of games
+Season: season of games.
+City: host city
+Sport: a grouping of disciplines
+Event: the particular event / competition
+Medal: the particular event / competition
+For example, an event is a competition in a sport or discipline that gives rise to a ranking. Thus Alpine Skiing is the discipline, and Alpine Skiing Women's Downhills is a particular event.
 
-* check the list [**here**](img/homework-2-assignments.png) to find your randomly assigned partners for this homework. You will appear as the owner of this repo with an associated collaborator. You will also appear as a collaborator for someone else's repo
-* ask to be added as a collaborator to your designated owner's repo
-* add your collaborator to this repo
-
-#### (c) create pull requests for the repo you are a collaborator for
-
-* create **one `pull` request per issue** you identify as subject to improvement. Note that the pull request should include the substantive change you are proposing for the repo. Note that you will not receive full marks is you do not add the change itself.
-* in your pull requests explain **why you are recommending specific changes** and **how do you perceive it might help** the you of the future. Note that you will not receive full marks if you do not add these explanations.
-* create at least five (5) pull requests to **improve the structure of the project** [`20 pts`]
-    * these could include - but are not limited to -  enhancements to the folder structure, adding an informative `README` file, adding items to the `.gitignore` file, dropping data folders, etc
-* create at least seven (7) pull requests to **improve coding etiquette** [`40 pts`]
-    * these could include - but are not limited to - reorganizing script structure, improving comments, using relative paths, improving readability, creating (and calling) additional scripts, etc
-
-
-
-#### (d) act on all pull requests from your collaborator [`40 pts`]
-
-* you will receive multiple `pull` requests from your collaborator with suggestions on how to adopt best practices in your repo
-* use the pull request functionality in GitHub to **accept**, **comment** or **reject** each one of these pull requests.
-* note that you will not receive full marks if you leave pull requests unattended.
+In addition, you are provided with some additional information about the countries in a separate spreadsheet, including the IOC Country    Code, Population, and GDP per capita.
